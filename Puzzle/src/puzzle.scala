@@ -40,7 +40,7 @@ def nextMove(b: Board):List[Board]  =  {
      }
    }
    //emptyPos contains the empty position
-   //from here we can retrn a list of boards using swap.
+   //from here we can retern a list of boards using swap.
    emptyPos match
    {
      case (i,j) if(i==1 && j==1)  => {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i,j+1))::Nil }
@@ -49,8 +49,8 @@ def nextMove(b: Board):List[Board]  =  {
      case (i,j) if(i==n && j==n) =>  {return b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j-1))::Nil }
      case (i,j) if(i==1)  => {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i,j+1))::b.swap((i,j), (i,j-1))::Nil }
      case (i,j) if(i==n) =>  {return b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j+1))::b.swap((i,j), (i,j-1))::Nil }
-     case (i,j) if(j==1) =>  {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j+1))::Nil }
-     case (i,j) if(j==1) =>  {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j-1))::Nil }
+     case (i,j)  =>  {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j+1))::Nil }
+     case (i,j) => if(j==n) {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j-1))::Nil }
      case (i,j) => {return b.swap((i,j), (i+1,j))::b.swap((i,j), (i-1,j))::b.swap((i,j), (i,j+1))::b.swap((i,j), (i,j-1))::Nil }
    }
      

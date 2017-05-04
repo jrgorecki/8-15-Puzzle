@@ -164,17 +164,45 @@ case class puzzleSolver(initialState: State, goalState: State) {
         }
       }
     }
-
+    * 
+    */
+   
   @tailrec
-  final def IDAStarSearch(queue: PriorityQueue[(State, List[Move])], maxDepth: Int, level: Int): Option[List[Move]] =
-    val (state, history) = queue.dequeue
-    /*State initial = initialState
-    initial match{
-    case Nil => 
-    }*/
-    
-    
-    }*/
+  final def IDAStarSearch(queue: PriorityQueue[(State, List[Move])], maxDepth: Int, level: Int, explored: Set[State]): Option[List[Move]] =
+    {
+         //initially, queue consists of simply the initial state, and an e, maxDepth should be 1,  and level should be 0
+         if(queue.length == 0)
+         {
+           //we have fully examined the "fringe" and there is nothing left.
+           //therefore iterate deeper.
+            IDAStarSearch(PriorityQueue((initialState, List[Move]())), maxDepth + 1, 0, Set[State]())
+         }
+         //note that the current "level" will is equivalent to the number of Moves in List.
+         else if(queue.length > 0) 
+         {
+           //do A* here
+             val (state, history) = queue.dequeue
+             if(state == goalState) Some(history)
+             else{//continue search
+               if(!explored(state)){
+                 if(history.length < maxDepth){
+                   val children = Move.availableStates(state, moves, history, explored)
+                   queue ++= children
+                   IDAStarSearch(queue, maxDepth, level+1, explored + state)
+                 }
+                 else{//history==maxDepth, so we have reached the limit
+                   //do not expand node,  just carry on to the next node to be dequeued
+                   IDAStarSearch(queue, maxDepth, level, explored + state)//add state to explored, because we never want to expand it
+                                      
+                 }
+               }
+               else{// we have already visited the head of the queu, so we carry on.
+                 IDAStarSearch(queue, maxDepth, level, explored)
+               }
+             }
+             
+        }
+     }
   
   lazy val allPathsFromInitial = breathFirstSearch(List((initialState, List())), Set(), List())
 
