@@ -178,9 +178,9 @@ case class puzzleSolver(initialState: State, goalState: State) {
            val q2:PriorityQueue[(State, List[Move])] = queue.drop(queue.length+1)
            q2 += ((initialState, List[Move]()))
             return IDAStarSearch(q2,  maxDepth + 1, 0, Set[State]())
-         }
+         } else {}
          //note that the current "level" will is equivalent to the number of Moves in List.
-         else
+         if(queue.length > 0)
          {
            //do A* here
              val (state, history) = queue.dequeue
@@ -212,7 +212,7 @@ case class puzzleSolver(initialState: State, goalState: State) {
   // ordering in my queue, so one can easily add solutions with better 
   // heuristic functions
   def bestSolution(ordering: Ordering[(State, List[Move])]) =
-    aStarSearch(PriorityQueue((initialState, List[Move]()))(ordering), Set())
+    IDAStarSearch(PriorityQueue((initialState, List[Move]()))(ordering), 1, 0, Set())
 
   lazy val bestSolutionManhatan: Option[List[Move]] =
     bestSolution(manhatanOrdering)
@@ -237,6 +237,7 @@ object puzzle{
 
      val x = puzzleSolver(goal8, test8).bestSolutionManhatan
        println(s"8 took ${(System.currentTimeMillis - t) / 1000.0}")
+       println(checkSolution(test8, goal8, x match {case Some(z) => z}))
        
        val t2 = System.currentTimeMillis
        

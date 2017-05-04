@@ -1,5 +1,6 @@
 import scala.annotation.tailrec
 import scala.collection.mutable.PriorityQueue
+import scala.collection.mutable.Queue
 
 case class NpuzzleSolver(initialState: State, goalState: State) {
 
@@ -50,7 +51,40 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
    * enter IDAStar Search function here
    * 
    */
+  final def IDAStarSearchManhattan(queue: Queue[(State, List[Move])], fThresh: Int): Option[List[Move]] = 
+  {
+    if (queue.length == 0) return IDAStarSearchManhattan(Queue((initialState, List[Move]())), fThresh + 1)
+    else {
+      val (state, hist) = queue.dequeue
+      if (state == goalState) Some(hist)
+      else {
+        //if f-val is less than Thresh, expand, else ignore. 
+        val fVal = state.manhattanBlockDistance(goalState) + hist.length 
+        if(fVal <= fThresh) {
+          queue ++= MoveFinder.availableMovesIDA(state, hist)
+          IDAStarSearchManhattan(queue, fThresh)
+        } else {IDAStarSearchManhattan(queue, fThresh)}
+      }
+    }
+  }
   
+  final def IDAStarSearchMisplaced(queue: Queue[(State, List[Move])], fThresh: Int): Option[List[Move]] = 
+  {
+    if (queue.length == 0) return IDAStarSearchMisplaced(Queue((initialState, List[Move]())), fThresh + 1)
+    else {
+      val (state, hist) = queue.dequeue
+      if (state == goalState) Some(hist)
+      else {
+        //if f-val is less than Thresh, expand, else ignore. 
+        val fVal = state.manhattanBlockDistance(goalState) + hist.length 
+        if(fVal <= fThresh) {
+          queue ++= MoveFinder.availableMovesIDA(state, hist)
+          IDAStarSearchMisplaced(queue, fThresh)
+        } else { IDAStarSearchMisplaced(queue, fThresh) }
+      }
+    }
+  }
+    
   
     /**********
      * functions for choosing search method and heuristic
@@ -62,11 +96,11 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
     val solutionMisplacedAStar: Option[List[Move]] = 
       aStarSearch(PriorityQueue((initialState,List[Move]()))(misplacedOrdering), Set())
 
-  /*  val solutionManhattanIDAStar: Option[List[Move]] = 
-      IDAStarSearch(PriorityQueue((initialState,List[Move]()))(manhattanOrdering), Set())
+    val solutionManhattanIDAStar: Option[List[Move]] = 
+      IDAStarSearchManhattan(Queue((initialState,List[Move]())), 1)
       
     val solutionMisplacedIDAStar: Option[List[Move]] = 
-      IDAStarSearch(PriorityQueue((initialState,List[Move]()))(misplacedOrdering), Set())*/
+      IDAStarSearchMisplaced(Queue((initialState,List[Move]())), 1)
 
 
 }

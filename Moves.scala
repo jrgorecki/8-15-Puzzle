@@ -53,4 +53,37 @@ object MoveFinder {
       if !explored(s)
     } yield (s, m :: history)
   }
-}
+  
+  def availableMovesIDA(state: State, history: List[Move]): Seq[(State, List[Move])] = {//ensures not to go bck and forth between parent and child, w/o "explored"
+      
+      if(history.length > 0){ val lastMove: Move = history.last
+      lastMove match
+        {
+          case Down() => for{
+                            m <-List(Down(), Left(), Right())
+                            s <- m.move(state)
+                          } yield (s, m::history)
+          case Up() => for{
+                            m <-List(Up(), Left(), Right())
+                            s <- m.move(state)
+                          } yield (s, m::history)
+          case Right() => for{
+                            m <-List(Up(), Down(), Right())
+                            s <- m.move(state)
+                          } yield (s, m::history)
+          case Left() => for{
+                            m <-List(Down(), Left(), Up())
+                            s <- m.move(state)
+                          } yield (s, m::history)
+        }
+      }
+      else 
+      {
+        for {
+      m <- moves
+      s <- m.move(state)
+      
+        } yield (s, m :: history)
+      }
+   }
+ }
