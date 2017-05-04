@@ -171,16 +171,16 @@ case class puzzleSolver(initialState: State, goalState: State) {
   final def IDAStarSearch(queue: PriorityQueue[(State, List[Move])], maxDepth: Int, level: Int, explored: Set[State]): Option[List[Move]] =
     {
          //initially, queue consists of simply the initial state, and an e, maxDepth should be 1,  and level should be 0
-         if(queue.length == 0)
-         {
+         if(queue.length == 0){
+         
            //we have fully examined the "fringe" and there is nothing left.
            //therefore iterate deeper.
-           queue = queue.clear;
-           queue += (initialState, List[Move]())
-            return IDAStarSearch(queue,  maxDepth + 1, 0, Set[State]())
+           val q2:PriorityQueue[(State, List[Move])] = queue.drop(queue.length+1)
+           q2 += ((initialState, List[Move]()))
+            return IDAStarSearch(q2,  maxDepth + 1, 0, Set[State]())
          }
          //note that the current "level" will is equivalent to the number of Moves in List.
-         if(queue.length > 0) 
+         else
          {
            //do A* here
              val (state, history) = queue.dequeue
