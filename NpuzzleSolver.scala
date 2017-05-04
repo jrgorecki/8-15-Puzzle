@@ -76,7 +76,7 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
       if (state == goalState) Some(hist)
       else {
         //if f-val is less than Thresh, expand, else ignore. 
-        val fVal = state.manhattanBlockDistance(goalState) + hist.length 
+        val fVal = state.misplacedBlocks(goalState) + hist.length 
         if(fVal <= fThresh) {
           queue ++= MoveFinder.availableMovesIDA(state, hist)
           IDAStarSearchMisplaced(queue, fThresh)
