@@ -175,10 +175,10 @@ case class puzzleSolver(initialState: State, goalState: State) {
          {
            //we have fully examined the "fringe" and there is nothing left.
            //therefore iterate deeper.
-            IDAStarSearch(PriorityQueue((initialState, List[Move]())), maxDepth + 1, 0, Set[State]())
+            IDAStarSearch(queue.clear + (initialState, List[Move]()), maxDepth + 1, 0, Set[State]())
          }
          //note that the current "level" will is equivalent to the number of Moves in List.
-         else if(queue.length > 0) 
+         else(queue.length > 0) 
          {
            //do A* here
              val (state, history) = queue.dequeue
