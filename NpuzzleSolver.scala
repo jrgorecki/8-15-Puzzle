@@ -99,26 +99,46 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
       
       
       
-/*
-  @tailrec
-  final def IDAStarSearchMisplaced(queue: Queue[(State, List[Move])], fThresh: Int): Option[List[Move]] = 
+ final def IDAStarSearchMisplaced(state: State, history: List[Move], fThresh: Int): (Int, Option[List[Move]]) = 
   {
-    if (queue.length == 0) return IDAStarSearchMisplaced(Queue((initialState, List[Move]())), fThresh + 1)
-    else {
-      val (state, hist) = queue.dequeue
-      if (state == goalState) Some(hist)
+   
+      if (state == goalState) {return(-1, Some(history))}
       else {
         //if f-val is less than Thresh, expand, else ignore. 
-        val fVal = state.misplacedBlocks(goalState) + hist.length 
-        if(fVal <= fThresh) {
-          queue ++= MoveFinder.availableMovesIDA(state, hist)
-          IDAStarSearchMisplaced(queue, fThresh)
-        } else { IDAStarSearchMisplaced(queue, fThresh) }
+        val fVal = state.misplacedBlocks(goalState) + history.length 
+        if(fVal > fThresh) {return (fVal,None) }
+        min = Int.MaxValue
+        
+          for(node <- MoveFinder.availableMovesIDA(state, history))
+          {
+            
+            IDAStarSearchMisplaced(node._1, node._2, fThresh) match {
+              case (_, Some(z)) => return (-1, Some(z)) 
+              case (fval, None) => { 
+                if(fval<min) {min = fval; }
+              }
+              
+            }
+          }
+        return (min, None)
       }
     }
+  
+  final def IDAMisplaced(): Option[List[Move]] = {
+    var fThresh = initialState.misplacedBlocks(goalState)
+    println(fThresh)
+    while(true){
+      var res = IDAStarSearchMisplaced(initialState, List[Move](), fThresh)
+      res match 
+      {
+        case (newThresh, None) => fThresh = newThresh;
+        case (_, Some(x)) => return Some(x)
+        
+        
+      }      
+    }
+    None
   }
-    
-  */
     /**********
      * functions for choosing search method and heuristic
      */
@@ -136,8 +156,8 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
     
     
       
-   /* val solutionMisplacedIDAStar: Option[List[Move]] = { min = Int.MaxValue;
-      IDAStarSearchMisplaced(initialState,List[Move](), 1) } */
+    val solutionMisplacedIDAStar: Option[List[Move]] = { min = Int.MaxValue;
+      IDAMisplaced() } 
 
 
 }
