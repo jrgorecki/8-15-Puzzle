@@ -56,7 +56,7 @@ object MoveFinder {
   
   def availableMovesIDA(state: State, history: List[Move]): Seq[(State, List[Move])] = {//ensures not to go bck and forth between parent and child, w/o "explored"
       
-      if(history.length > 0){ val lastMove: Move = history.last
+      if(history.length > 0){ val lastMove: Move = history(0)
       lastMove match
         {
           case Down() => for{

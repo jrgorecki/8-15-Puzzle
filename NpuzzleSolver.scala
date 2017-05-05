@@ -3,6 +3,7 @@ import scala.collection.mutable.PriorityQueue
 import scala.collection.mutable.Queue
 
 case class NpuzzleSolver(initialState: State, goalState: State) {
+  var min = Int.MaxValue
 
     /*******
    * Uses the number of misplaced blocks to create an ordering to perform a* search to solve an n-puzzle
@@ -51,23 +52,55 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
    * enter IDAStar Search function here
    * 
    */
-  final def IDAStarSearchManhattan(queue: Queue[(State, List[Move])], fThresh: Int): Option[List[Move]] = 
+  
+  final def IDAStarSearchManhattan(state: State, history: List[Move], fThresh: Int): (Int, Option[List[Move]]) = 
   {
-    if (queue.length == 0) return IDAStarSearchManhattan(Queue((initialState, List[Move]())), fThresh + 1)
-    else {
-      val (state, hist) = queue.dequeue
-      if (state == goalState) Some(hist)
+   
+      if (state == goalState) {return(-1, Some(history))}
       else {
         //if f-val is less than Thresh, expand, else ignore. 
-        val fVal = state.manhattanBlockDistance(goalState) + hist.length 
-        if(fVal <= fThresh) {
-          queue ++= MoveFinder.availableMovesIDA(state, hist)
-          IDAStarSearchManhattan(queue, fThresh)
-        } else {IDAStarSearchManhattan(queue, fThresh)}
+        val fVal = state.manhattanBlockDistance(goalState) + history.length 
+        if(fVal > fThresh) {return (fVal,None) }
+        min = Int.MaxValue
+        
+          for(node <- MoveFinder.availableMovesIDA(state, history))
+          {
+            
+            IDAStarSearchManhattan(node._1, node._2, fThresh) match {
+              case (_, Some(z)) => return (-1, Some(z)) 
+              case (fval, None) => { 
+                if(fval<min) {min = fval; }
+              }
+              
+            }
+          }
+        return (min, None)
       }
     }
+  
+  final def IDAManhattan(): Option[List[Move]] = {
+    var fThresh = initialState.manhattanBlockDistance(goalState)
+    println(fThresh)
+    while(true){
+      var res = IDAStarSearchManhattan(initialState, List[Move](), fThresh)
+      res match 
+      {
+        case (newThresh, None) => fThresh = newThresh;
+        case (_, Some(x)) => return Some(x)
+        
+        
+      }      
+    }
+    None
   }
   
+      
+      
+      
+      
+      
+/*
+  @tailrec
   final def IDAStarSearchMisplaced(queue: Queue[(State, List[Move])], fThresh: Int): Option[List[Move]] = 
   {
     if (queue.length == 0) return IDAStarSearchMisplaced(Queue((initialState, List[Move]())), fThresh + 1)
@@ -85,7 +118,7 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
     }
   }
     
-  
+  */
     /**********
      * functions for choosing search method and heuristic
      */
@@ -96,11 +129,15 @@ case class NpuzzleSolver(initialState: State, goalState: State) {
     val solutionMisplacedAStar: Option[List[Move]] = 
       aStarSearch(PriorityQueue((initialState,List[Move]()))(misplacedOrdering), Set())
 
-    val solutionManhattanIDAStar: Option[List[Move]] = 
-      IDAStarSearchManhattan(Queue((initialState,List[Move]())), 1)
+    val solutionManhattanIDAStar: Option[List[Move]] = { min = Int.MaxValue;
+      IDAManhattan()
       
-    val solutionMisplacedIDAStar: Option[List[Move]] = 
-      IDAStarSearchMisplaced(Queue((initialState,List[Move]())), 1)
+      }
+    
+    
+      
+   /* val solutionMisplacedIDAStar: Option[List[Move]] = { min = Int.MaxValue;
+      IDAStarSearchMisplaced(initialState,List[Move](), 1) } */
 
 
 }
