@@ -14,7 +14,7 @@ object Driver{
        
        val t2 = System.currentTimeMillis
        
-       val goal15 = State(Vector(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15))
+       val goal15 = State(Vector(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0))
        val test15 = State(Vector(1,6,2,3,9,5,7,4,10,0,11,8,13,14,15,12))
        
        val z = NpuzzleSolver(goal15, test15).solutionManhattanIDAStar

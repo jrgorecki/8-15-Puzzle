@@ -56,6 +56,65 @@ case class State(board: Vector[Int]) extends Equals {
 
       countMisplacedBlocks(0, 0)
     }
+  
+  
+  def linearConflict(goalState: State): Int = 
+  {
+    var res = 0
+    //for each row, count linear conflicts
+    for( i <- 0 to rowSize-1){
+      res += countHorizConflicts(board.slice(i*rowSize, (i+1)*rowSize ), goalState.board.slice(i*rowSize, (i+1)*rowSize))
+    }
+    for( i <- 0 to rowSize-1){
+      //get row Vectors
+      var goalVect = Vector[Int]()
+      var colVect = Vector[Int]()
+      for ( j <- 0 to rowSize*rowSize-1){
+        if(j%rowSize == i) {
+          goalVect = goalVect :+ goalState.board(j)
+          colVect  = colVect :+ board(j)
+        }
+      }
+      res += countVertConflicts(colVect, goalVect)
+    }
+    res = res + manhattanBlockDistance(goalState)   
+    res
+    
+  }
+  
+    def countHorizConflicts (row: Vector[Int], goalRow: Vector[Int]): Int = {
+    var res = 0
+       
+    if(goalRow.length == 0 || row.length ==0 ) { return res }
+    for( i <- 0 to rowSize-2){
+      for (j <- i+1 to rowSize - 1){
+        if(goalRow.contains(row(i)) && goalRow.contains(row(j))){
+          if(row(i) > row(j)) {//conflict
+            res += 1
+          }
+        }
+      }
+    
+    }
+    res
+  }
+    
+    def countVertConflicts (row: Vector[Int], goalRow: Vector[Int]): Int = {
+    var res = 0
+       
+    for( i <- 0 to rowSize-2){
+      for (j <- i+1 to rowSize - 1){
+        if(goalRow.contains(row(i)) && goalRow.contains(row(j))){
+          if(row(i) > row(j)) {//conflict
+            res += 1
+          }
+        }
+      }
+    
+    }
+    res
+  }
+  
 
   // The top bottom left and right of the emptySpaceIndex box
   val aboveEmptyIndex = if (emptySpaceIndex > (rowSize - 1)) Some(emptySpaceIndex - rowSize) else None
